@@ -23,7 +23,7 @@ namespace KillBind
     {
         private const string modGUID = "com.Confusified.KillBind";
         private const string modName = "Kill Bind";
-        private const string modVersion = "2.1.2";
+        private const string modVersion = "2.1.3";
 
         public static readonly KillBind_Inputs InputActionInstance = new KillBind_Inputs();
         private readonly Harmony _harmony = new Harmony(modGUID);
@@ -97,7 +97,7 @@ namespace KillBind
             //Legacy settings
             LegacySettings.HeadType = modConfig.Bind<int>("Mod Settings", "HeadType", 1, "Type of head your ragdoll will have");
         }
-
+        //hi if anyone is reading this please don't do config stuff like this, i need to change it but i don't want to
         private void UpdateConfig()
         {
             if (ModSettings.ConfigVersion == DefaultModSettings.ConfigVersion) { return; }

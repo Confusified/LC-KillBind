@@ -31,15 +31,21 @@ namespace KillBind.Patches
                 StartOfRoundInstance = StartOfRound.Instance;
 
                 InputActionInstance.ActionKillBind.performed += OnKeyPress;
+                modLogger.LogInfo("Killbind has been bound");
             }
         }
 
         [HarmonyPatch(nameof(PlayerControllerB.OnDestroy))]
-        private static void Postfix() //this fixes some memory leaks (i think)
+        [HarmonyPostfix]
+        private static void RemoveOldListeners(PlayerControllerB __instance) //this fixes some memory leaks (i think)
         {
-            InputActionInstance.ActionKillBind.performed -= OnKeyPress;
-            UIHandler.DeathDropdownComponent.onValueChanged.RemoveAllListeners();
-            UIHandler.HeadDropdownComponent.onValueChanged.RemoveAllListeners();
+            if (__instance == GameNetworkManager.Instance.localPlayerController) //only remove listeners when it is themselves
+            {
+                InputActionInstance.ActionKillBind.performed -= OnKeyPress;
+                UIHandler.DeathDropdownComponent.onValueChanged.RemoveAllListeners();
+                UIHandler.HeadDropdownComponent.onValueChanged.RemoveAllListeners();
+                modLogger.LogInfo("removed listeners");
+            }
         }
 
         public static void OnKeyPress(InputAction.CallbackContext callbackContext)
@@ -75,9 +81,10 @@ namespace KillBind.Patches
             PositionCurrentFrame = PlayerControllerBInstance.gameplayCamera.transform.position;
             RagdollVelocity = (PositionCurrentFrame - PositionLastFrame) * VelocityMultiplier; //The difference in position from these frames are insanely small, so it's multiplied
             RagdollVelocity.y *= 25 / VelocityMultiplier; //Reduce velocity in y-axis, the y-axis velocity will increase when VelocityMultiplier is under 25 (otherwise it would be negligible)
-            // There should be a limit to the VelocityMultiplier (min value of something and max value of something else) but it currently doesn't allow customisation anyway
+                                                          // There should be a limit to the VelocityMultiplier (min value of something and max value of something else) but it currently doesn't allow customisation anyway
 
             PlayerControllerBInstance.KillPlayer(RagdollVelocity, true, (CauseOfDeath)ModSettings.DeathCause.Value, ModSettings.RagdollType.Value);
+            modLogger.LogInfo("Player passed KillBind's checks, attempting to kill");
         }
     }
 }

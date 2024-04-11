@@ -30,7 +30,6 @@ namespace KillBind.Patches
 
         private static string CleanRagdollName(string ragdollName)
         {
-            Initialise.modLogger.LogInfo(ragdollName);
             if (ragdollName == "PlayerRagdoll") //Normal ragdoll
             {
                 ragdollName = "Normal";
@@ -45,8 +44,12 @@ namespace KillBind.Patches
             }
             else
             {
-                ragdollName = ragdollName.Replace("PlayerRagdoll", "");
+                ragdollName = ragdollName.Replace("Player", "");
+                ragdollName = ragdollName.Replace("Ragdoll", "");
                 ragdollName = ragdollName.Replace(" Variant", "");
+                //mostly just for custom added ones
+                ragdollName = ragdollName.Replace("Variant", "");
+                ragdollName = ragdollName.Replace("Prefab", "");
             }
             return ragdollName;
         }
