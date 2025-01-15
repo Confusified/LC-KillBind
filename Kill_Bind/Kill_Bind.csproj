@@ -2,7 +2,7 @@
 
     <!-- BepInEx Properties -->
     <PropertyGroup>
-        <AssemblyName>confusified.com.github</AssemblyName>
+        <AssemblyName>KillBind.Confusified.com.GitHub</AssemblyName>
         <Product>Kill Bind</Product>
         <!-- Change to whatever version you're currently on. -->
         <Version>2.3.0</Version>
@@ -47,6 +47,7 @@
         <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" PrivateAssets="all"/>
         <PackageReference Include="LethalCompany.GameLibs.Steam" Version="*-*" PrivateAssets="all"/>
         <PackageReference Include="UnityEngine.Modules" Version="2022.3.9" PrivateAssets="all"/>
+        <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.1" PrivateAssets="all"/>
         <PackageReference Include="TeamBMX.LobbyCompatibility" Version="1.*" PrivateAssets="all"/>
     </ItemGroup>
 
@@ -54,14 +55,26 @@
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all"/>
     </ItemGroup>
 
-    <!-- Package References - Game Assembly HookGen -->
+    
     <ItemGroup>
+        <!-- Game Assembly HookGen -->
         <Reference Include="MMHOOK_Assembly-CSharp">
             <HintPath>$(MMHOOKDirectory)MMHOOK_Assembly-CSharp.dll</HintPath>
         </Reference>
-        
+
+        <!-- Input Utils -->
         <Reference Include="LethalCompanyInputUtils">
-            <HintPath>$(PluginsDirectory)\LethalCompanyInputUtils\LethalCompanyInputUtils.dll</HintPath>
+            <HintPath>$(PluginsDirectory)LethalCompanyInputUtils\LethalCompanyInputUtils.dll</HintPath>
+        </Reference>
+
+        <!-- ToilHead -->
+        <Reference Include="com.github.zehsteam.ToilHead" Publicize="true">
+            <HintPath>$(PluginsDirectory)ToilHead-v1.7.2\com.github.zehsteam.ToilHead.dll</HintPath>
+        </Reference>
+
+        <!-- Game Assembly -->
+        <Reference Include="Assembly-CSharp" Publicize="true">
+            <HintPath>$(LethalCompanyDirectory)Lethal Company_Data\Managed\Assembly-CSharp.dll</HintPath>
         </Reference>
     </ItemGroup>
 </Project>

@@ -1,0 +1,102 @@
+using System.Collections.Generic;
+using System.Reflection;
+using BepInEx;
+using BepInEx.Bootstrap;
+using BepInEx.Configuration;
+using BepInEx.Logging;
+using Kill_Bind.Config;
+using Kill_Bind.Hooks.DependencyRelated;
+
+namespace Kill_Bind;
+
+// Soft Dependencies
+[SoftDependency("BMX.LobbyCompatibility", typeof(RegisterPlugin_LobbyCompatibility))]
+// [BepInDependency(DependencyGUIDStrings.BMXLOBBYCOMPATIBILITY, BepInDependency.DependencyFlags.SoftDependency)]
+[SoftDependency("com.github.zehsteam.ToilHead", typeof(ToilHead))]
+
+// While LethalConfig is not necessary, it is highly recommended.
+[SoftDependency("ainavt.lc.lethalconfig", typeof(SetupConfig_LethalConfig))]
+// Hard Dependencies
+[BepInDependency("com.rune580.LethalCompanyInputUtils", BepInDependency.DependencyFlags.HardDependency)]
+
+// Plugin
+[BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+public class Main : BaseUnityPlugin
+{
+    public static Main Instance { get; private set; } = null!;
+    internal new static ManualLogSource Logger { get; private set; } = null!;
+    private static readonly string configLocation = Utility.CombinePaths(Paths.ConfigPath + "\\" + MyPluginInfo.PLUGIN_GUID[9..21].Replace(".", "\\")) + MyPluginInfo.PLUGIN_GUID[..9];
+    internal static ConfigFile killbindConfig = new(configLocation + ".cfg", false); 
+
+    public void Awake()
+    {
+        Logger = base.Logger;
+        Instance = this;
+
+        // Running code from the soft dependencies in the same file will cause an error if you do not have the dependency.
+        ConfigHandler.InitialiseConfig();
+        InitialiseSoftDependencies();
+
+        HookMethods();
+
+        Logger.LogInfo($"{MyPluginInfo.PLUGIN_NAME} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
+    }
+
+    private static void InitialiseSoftDependencies()
+    {
+        Logger.LogDebug("Activating Soft Dependencies...");
+
+        SoftDependencyAttribute.Init(Instance);
+
+        Logger.LogDebug("Soft Dependencies Activated.");
+    }
+
+    private static void HookMethods()
+    {
+        Logger.LogDebug("Hooking...");
+
+        /*
+         *  Subscribe with 'On.Class.Method += CustomClass.CustomMethod;' for each method you're patching.
+         */
+
+        Logger.LogDebug("Finished Hooking.");
+    }
+}
+
+// Source: https://discord.com/channels/1168655651455639582/1216761387343151134/1216761387343151134, Lethal Company Modding, Discord Server
+internal class SoftDependencyAttribute : BepInDependency
+{
+    public System.Type Handler;
+
+    /// <summary>
+    /// Marks this BepInEx.BaseUnityPlugin as soft depenant on another plugin.
+    /// The handler type must have an Initialize() method that will automatically be invoked if the compatible dependency is present.
+    /// </summary>
+    /// <param name="guid">The GUID of the referenced plugin.</param>
+    /// <param name="handlerType">The class type that will handle this compatibility. Must contain a private method called Initialize()</param>
+    public SoftDependencyAttribute(string guid, System.Type handlerType) : base(guid, DependencyFlags.SoftDependency)
+    {
+        Handler = handlerType;
+    }
+
+    /// <summary>
+    /// Global initializer for this class.
+    /// You must call this method from your base plugin Awake method and pass the plugin instance to the source parameter.
+    /// </summary>
+    /// <param name="source">The source plugin instance with the BepInPlugin attribute.</param>
+    public static void Init(BaseUnityPlugin source)
+    {
+        const BindingFlags bindingFlags = BindingFlags.NonPublic | BindingFlags.Static;
+
+        IEnumerable<SoftDependencyAttribute> attributes = source.GetType().GetCustomAttributes<SoftDependencyAttribute>();
+        foreach (SoftDependencyAttribute attr in attributes)
+        {
+            if (Chainloader.PluginInfos.ContainsKey(attr.DependencyGUID))
+            {
+                Main.Logger.LogDebug("Found compatible mod: " + attr.DependencyGUID);
+                attr.Handler?.GetMethod("Activate", bindingFlags)?.Invoke(null, null);
+                attr.Handler = null!;
+            }
+        }
+    }
+}
