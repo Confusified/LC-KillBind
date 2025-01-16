@@ -44,9 +44,10 @@ public class SetupConfig_LethalConfig
                 Description = "Determines what ragdoll will be used.",
                 RequiresRestart = false
             });
-
-            LethalConfigManager.AddConfigItem(ragdollTypeDropdown);
-            ragdollTypeItemAdded = true;
+            // Commented out due to a bug, e.g. when adding ragdoll mods you'll have to boot into a lobby and then restart to be able to use your new ragdolls
+            
+            // LethalConfigManager.AddConfigItem(ragdollTypeDropdown);
+            // ragdollTypeItemAdded = true;
         }
         
         LethalConfigManager.SetModDescription("Become a ragdoll with just one button press");
