@@ -32,7 +32,7 @@ public class ConfigHandler
         cfg.SaveOnConfigSet = true;
     }
 
-    // This removes all unused config entries, this does not 
+    // This removes all unused config entries, this does not bring over any old config values (i'm just too lazy to implement that (again))
     private static void ClearOrphanedEntries(ConfigFile cfg)
     {
         // Find the private property `OrphanedEntries` from the type `ConfigFile`
