@@ -5,17 +5,25 @@ using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using Kill_Bind.Config;
+using Kill_Bind.Hooks;
 using Kill_Bind.Hooks.DependencyRelated;
+using LethalCompanyInputUtils.Api;
+using LethalCompanyInputUtils.BindingPathEnums;
+using UnityEngine.InputSystem;
 
 namespace Kill_Bind;
+public class KillBind_Inputs : LcInputActions
+{
+    [InputAction(KeyboardControl.Backspace, Name = "Suicide", ActionType = InputActionType.Button)]
+    public InputAction ActionKillBind { get; set; }
+}
 
 // Soft Dependencies
 [SoftDependency("BMX.LobbyCompatibility", typeof(RegisterPlugin_LobbyCompatibility))]
-// [BepInDependency(DependencyGUIDStrings.BMXLOBBYCOMPATIBILITY, BepInDependency.DependencyFlags.SoftDependency)]
 [SoftDependency("com.github.zehsteam.ToilHead", typeof(ToilHead))]
-
 // While LethalConfig is not necessary, it is highly recommended.
 [SoftDependency("ainavt.lc.lethalconfig", typeof(SetupConfig_LethalConfig))]
+
 // Hard Dependencies
 [BepInDependency("com.rune580.LethalCompanyInputUtils", BepInDependency.DependencyFlags.HardDependency)]
 
@@ -25,18 +33,18 @@ public class Main : BaseUnityPlugin
 {
     public static Main Instance { get; private set; } = null!;
     internal new static ManualLogSource Logger { get; private set; } = null!;
-    private static readonly string configLocation = Utility.CombinePaths(Paths.ConfigPath + "\\" + MyPluginInfo.PLUGIN_GUID[9..21].Replace(".", "\\")) + MyPluginInfo.PLUGIN_GUID[..9];
-    internal static ConfigFile killbindConfig = new(configLocation + ".cfg", false); 
+    private static readonly string configLocation = Utility.CombinePaths(Paths.ConfigPath + "\\" + MyPluginInfo.PLUGIN_GUID[9..21].Replace(".", "\\")) + MyPluginInfo.PLUGIN_GUID[..8];
+    internal static ConfigFile killbindConfig = new(configLocation + ".cfg", false);
+    public static readonly KillBind_Inputs InputActionInstance = new();
 
     public void Awake()
     {
         Logger = base.Logger;
         Instance = this;
 
-        // Running code from the soft dependencies in the same file will cause an error if you do not have the dependency.
         ConfigHandler.InitialiseConfig();
+        // Running code from the soft dependencies in the same file will cause an error if you do not have the dependency.
         InitialiseSoftDependencies();
-
         HookMethods();
 
         Logger.LogInfo($"{MyPluginInfo.PLUGIN_NAME} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
@@ -58,6 +66,11 @@ public class Main : BaseUnityPlugin
         /*
          *  Subscribe with 'On.Class.Method += CustomClass.CustomMethod;' for each method you're patching.
          */
+        On.StartOfRound.Start += StartOfRoundHooks.UpdateRagdollTypeList;
+        Logger.LogDebug("Hooked: StartOfRound, Start");
+
+        InputActionInstance.ActionKillBind.performed += KillBindHandler.OnPressKillBind;
+        Logger.LogDebug("Bound KillBind's Keybind.");
 
         Logger.LogDebug("Finished Hooking.");
     }
@@ -84,17 +97,18 @@ internal class SoftDependencyAttribute : BepInDependency
     /// You must call this method from your base plugin Awake method and pass the plugin instance to the source parameter.
     /// </summary>
     /// <param name="source">The source plugin instance with the BepInPlugin attribute.</param>
-    public static void Init(BaseUnityPlugin source)
+    internal static void Init(BaseUnityPlugin source)
     {
         const BindingFlags bindingFlags = BindingFlags.NonPublic | BindingFlags.Static;
 
         IEnumerable<SoftDependencyAttribute> attributes = source.GetType().GetCustomAttributes<SoftDependencyAttribute>();
         foreach (SoftDependencyAttribute attr in attributes)
         {
+            if (attr == null) continue;
             if (Chainloader.PluginInfos.ContainsKey(attr.DependencyGUID))
             {
                 Main.Logger.LogDebug("Found compatible mod: " + attr.DependencyGUID);
-                attr.Handler?.GetMethod("Activate", bindingFlags)?.Invoke(null, null);
+                attr.Handler.GetMethod("Activate", bindingFlags)?.Invoke(null, null);
                 attr.Handler = null!;
             }
         }

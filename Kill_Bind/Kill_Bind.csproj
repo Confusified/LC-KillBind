@@ -67,6 +67,11 @@
             <HintPath>$(PluginsDirectory)LethalCompanyInputUtils\LethalCompanyInputUtils.dll</HintPath>
         </Reference>
 
+        <!-- Lethal Config -->
+        <Reference Include="LethalConfig">
+            <HintPath>$(PluginsDirectory)LethalConfig\LethalConfig.dll</HintPath>
+        </Reference>
+
         <!-- ToilHead -->
         <Reference Include="com.github.zehsteam.ToilHead" Publicize="true">
             <HintPath>$(PluginsDirectory)ToilHead-v1.7.2\com.github.zehsteam.ToilHead.dll</HintPath>

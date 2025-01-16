@@ -18,7 +18,7 @@ public class ToilHead
         bool editRagdoll = Utils.RandomPercent(ToilSlayerRagdollChance);
         TurretHeadManager.SetDeadBodyTurretHead(self, editRagdoll);
     }
-    public static void Activate()
+    private static void Activate()
     {
         ToilHeadMod_Present = true;
         ConfigFile config = Chainloader.PluginInfos["com.github.zehsteam.ToilHead"].Instance.Config;
@@ -37,8 +37,8 @@ public class ToilHead
     }
 
     private static void UpdateChanceValue(object sender = null!, EventArgs args = null!)
-		{
-			ToilSlayerRagdollChance = ToilPlayerSlayerChance.Value;
-			Main.Logger.LogDebug($"Updated ToilSlayerRagdollChance to {ToilSlayerRagdollChance}");
-		}
+    {
+        ToilSlayerRagdollChance = ToilPlayerSlayerChance.Value;
+        Main.Logger.LogDebug($"Updated ToilSlayerRagdollChance to {ToilSlayerRagdollChance}");
+    }
 }
