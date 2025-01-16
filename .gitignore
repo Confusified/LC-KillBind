@@ -1,4 +1,5 @@
-﻿/.vs/KillBind
-/KillBind
+﻿/Kill_Bind/obj
+/Kill_Bind/bin
 /packages
 /.editorconfig
+/Kill_Bind/Kill_Bind.csproj.user
