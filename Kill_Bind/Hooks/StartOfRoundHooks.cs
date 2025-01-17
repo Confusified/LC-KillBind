@@ -8,6 +8,7 @@ namespace Kill_Bind.Hooks;
 
 public class StartOfRoundHooks
 {
+    public static StartOfRound StartOfRoundInstance;
     private static bool ragdollListCreated = false;
     public static void UpdateRagdollTypeConfig()
     {
@@ -41,6 +42,7 @@ public class StartOfRoundHooks
 
         UpdateRagdollTypeConfig();
         Main.Logger.LogDebug("Finished creating ragdoll list");
+        StartOfRoundInstance = self;
         ragdollListCreated = true;
     }
 

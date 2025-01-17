@@ -30,6 +30,7 @@ public class KillBindHandler : MonoBehaviour
         if (!ConfigSettings.ModEnabled.Value) return;
         if (player == null || player != networkManager.localPlayerController) return;
         if (player.isPlayerDead) return;
+        if (StartOfRoundHooks.StartOfRoundInstance.inShipPhase) return;
         if (hudManagerInstance == null || hudManagerInstance.typingIndicator.enabled || player.isTypingChat) return;
         if (terminal == null || terminal.terminalInUse && player.inTerminalMenu) return;
         if (quickmenuInstance == null || quickmenuInstance.isMenuOpen) return;
