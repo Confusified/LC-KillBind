@@ -43,8 +43,10 @@ public class KillBindHandler : MonoBehaviour
         List<GameObject> ragdollList = localPlayer.playersManager.playerRagdolls;
         yield return waitForFrameEnd;
 
+        // This fetches the int of the ragdoll as the game uses the index rather than the name for the ragdoll
         GameObject ragdoll = ragdollList.Find((GameObject x) => x.name.Contains(ConfigSettings.RagdollType.Value));
         // Due to changing the name of the normal regular to "Normal", it cannot be found by this system. So it's done like this
+        // 1 == HeadBurst, which is the failsafe in case something goes wrong
         int ragdollInt = ConfigSettings.RagdollType.Value == "Normal" ? 0 : 1;
         ragdollInt = ragdoll != null ? ragdollList.IndexOf(ragdoll) : ragdollInt;
         

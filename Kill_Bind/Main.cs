@@ -63,9 +63,6 @@ public class Main : BaseUnityPlugin
     {
         Logger.LogDebug("Hooking...");
 
-        /*
-         *  Subscribe with 'On.Class.Method += CustomClass.CustomMethod;' for each method you're patching.
-         */
         On.StartOfRound.Start += StartOfRoundHooks.UpdateRagdollTypeList;
         Logger.LogDebug("Hooked: StartOfRound, Start");
 
