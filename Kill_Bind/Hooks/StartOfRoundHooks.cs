@@ -8,13 +8,13 @@ namespace Kill_Bind.Hooks;
 
 public class StartOfRoundHooks
 {
-
+    private static bool ragdollListCreated = false;
     public static void UpdateRagdollTypeConfig()
     {
         ConfigSettings.ListRagdollType = new(Regex.Split(ConfigSettings.RagdollTypeList.Value, ";"));
         ConfigHandler.RagdollTypeDescription = new(description: "Determines what ragdoll will be used.", acceptableValues: new AcceptableValueList<string>(ConfigSettings.ListRagdollType.ToArray()));
         string oldVal = ConfigSettings.RagdollType.Value;
-        
+
         // By temporarily disabling the auto-saving, it'll minimize the amount of unnecessary saving.
         Main.killbindConfig.SaveOnConfigSet = false;
         Main.killbindConfig.Remove(ConfigSettings.RagdollType.Definition);
@@ -30,6 +30,7 @@ public class StartOfRoundHooks
     public static void UpdateRagdollTypeList(On.StartOfRound.orig_Start orig, StartOfRound self)
     {
         orig(self);
+        if (ragdollListCreated) return;
         Main.Logger.LogDebug("Creating ragdoll list...");
         ConfigSettings.RagdollTypeList.Value = "";
         foreach (GameObject ragdoll in self.playerRagdolls)
@@ -40,6 +41,7 @@ public class StartOfRoundHooks
 
         UpdateRagdollTypeConfig();
         Main.Logger.LogDebug("Finished creating ragdoll list");
+        ragdollListCreated = true;
     }
 
     internal static string CleanRagdollName(string ragdollName)

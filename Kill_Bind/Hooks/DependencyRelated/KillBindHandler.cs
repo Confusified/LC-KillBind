@@ -27,12 +27,12 @@ public class KillBindHandler : MonoBehaviour
 
         // We only want the kill bind to actually do something when the situation is valid
         if (!callbackContext.performed) return;
+        if (!ConfigSettings.ModEnabled.Value) return;
         if (player == null || player != networkManager.localPlayerController) return;
         if (player.isPlayerDead) return;
         if (hudManagerInstance == null || hudManagerInstance.typingIndicator.enabled || player.isTypingChat) return;
         if (terminal == null || terminal.terminalInUse && player.inTerminalMenu) return;
-        if (quickmenuInstance == null || quickmenuInstance.enabled) return;
-        //something that checks if person is not in quickmenu
+        if (quickmenuInstance == null || quickmenuInstance.isMenuOpen) return;
 
         Main.Logger.LogDebug("Passed KillBind's checks, attempting to kill after yielding until end of frame");
         CoroutineHelper.Start(KillAfterYield(player));
@@ -42,15 +42,16 @@ public class KillBindHandler : MonoBehaviour
     {
         List<GameObject> ragdollList = localPlayer.playersManager.playerRagdolls;
         yield return waitForFrameEnd;
-        // 
+
         GameObject ragdoll = ragdollList.Find((GameObject x) => x.name.Contains(ConfigSettings.RagdollType.Value));
-        int ragdollInt = ConfigSettings.RagdollType.Value == "Normal" ? 1 : 0;
+        // Due to changing the name of the normal regular to "Normal", it cannot be found by this system. So it's done like this
+        int ragdollInt = ConfigSettings.RagdollType.Value == "Normal" ? 0 : 1;
         ragdollInt = ragdoll != null ? ragdollList.IndexOf(ragdoll) : ragdollInt;
-        Main.Logger.LogDebug($"ragdoll: {ragdoll?.name}, int: {ragdollInt}");
+        
 
         localPlayer.KillPlayer(localPlayer.thisController.velocity, spawnBody: true, causeOfDeath: ConfigSettings.DeathCause.Value, deathAnimation: ragdollInt, positionOffset: default);
-        Main.Logger.LogDebug("Player should have died now by use of KillBind.");
-        Main.Logger.LogDebug($"DEATH INFO: CoD: {ConfigSettings.DeathCause.Value}, Ragdoll Int: {ragdollInt}, Corresponding ragdoll: {ragdoll?.name}");
+        Main.Logger.LogDebug("Player should have died now");
+        Main.Logger.LogDebug($"Ragdoll: {ConfigSettings.RagdollType.Value}, Ragdoll Int: {ragdollInt}, CoD: {ConfigSettings.DeathCause.Value}");
 
         if (ToilHead.ToilHeadMod_Present && ConfigSettings.RagdollType.Value == "Spring")
         {
