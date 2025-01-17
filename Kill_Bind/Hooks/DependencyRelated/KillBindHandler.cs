@@ -15,6 +15,7 @@ public class KillBindHandler : MonoBehaviour
     private static PlayerControllerB? player;
     private static Terminal? terminal;
     private static HUDManager? hudManagerInstance;
+    private static QuickMenuManager? quickmenuInstance;
     public static void OnPressKillBind(CallbackContext callbackContext)
     {
         Main.Logger.LogDebug("Keybind for KillBind has been pressed.");
@@ -22,13 +23,16 @@ public class KillBindHandler : MonoBehaviour
         player = networkManager.localPlayerController;
         terminal = UnityEngine.Object.FindObjectOfType<Terminal>(); // does not support multiple terminals most likely (uh oh)
         hudManagerInstance = HUDManager.Instance;
+        quickmenuInstance = player?.quickMenuManager;
 
         // We only want the kill bind to actually do something when the situation is valid
         if (!callbackContext.performed) return;
-        if (player != networkManager.localPlayerController) return;
+        if (player == null || player != networkManager.localPlayerController) return;
         if (player.isPlayerDead) return;
-        if (hudManagerInstance.typingIndicator.enabled || player.isTypingChat) return;
-        if (terminal.terminalInUse && player.inTerminalMenu) return;
+        if (hudManagerInstance == null || hudManagerInstance.typingIndicator.enabled || player.isTypingChat) return;
+        if (terminal == null || terminal.terminalInUse && player.inTerminalMenu) return;
+        if (quickmenuInstance == null || quickmenuInstance.enabled) return;
+        //something that checks if person is not in quickmenu
 
         Main.Logger.LogDebug("Passed KillBind's checks, attempting to kill after yielding until end of frame");
         CoroutineHelper.Start(KillAfterYield(player));
@@ -40,11 +44,13 @@ public class KillBindHandler : MonoBehaviour
         yield return waitForFrameEnd;
         // 
         GameObject ragdoll = ragdollList.Find((GameObject x) => x.name.Contains(ConfigSettings.RagdollType.Value));
-        int num = (!(ConfigSettings.RagdollType.Value == "Normal")) ? 1 : 0;
-        num = ragdoll != null ? ragdollList.IndexOf(ragdoll) : num;
+        int ragdollInt = ConfigSettings.RagdollType.Value == "Normal" ? 1 : 0;
+        ragdollInt = ragdoll != null ? ragdollList.IndexOf(ragdoll) : ragdollInt;
+        Main.Logger.LogDebug($"ragdoll: {ragdoll?.name}, int: {ragdollInt}");
 
-        localPlayer.KillPlayer(localPlayer.thisController.velocity, true, ConfigSettings.DeathCause.Value, num);
+        localPlayer.KillPlayer(localPlayer.thisController.velocity, spawnBody: true, causeOfDeath: ConfigSettings.DeathCause.Value, deathAnimation: ragdollInt, positionOffset: default);
         Main.Logger.LogDebug("Player should have died now by use of KillBind.");
+        Main.Logger.LogDebug($"DEATH INFO: CoD: {ConfigSettings.DeathCause.Value}, Ragdoll Int: {ragdollInt}, Corresponding ragdoll: {ragdoll?.name}");
 
         if (ToilHead.ToilHeadMod_Present && ConfigSettings.RagdollType.Value == "Spring")
         {

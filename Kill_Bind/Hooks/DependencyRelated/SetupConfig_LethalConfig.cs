@@ -10,7 +10,6 @@ public class SetupConfig_LethalConfig
 {
     public static bool LethalConfigFound = false;
     private static bool ragdollTypeItemAdded = false;
-    public static TextDropDownConfigItem ragdollTypeDropdown;
     private static void Activate()
     {
         LethalConfigFound = true;
@@ -35,6 +34,8 @@ public class SetupConfig_LethalConfig
         LethalConfigManager.AddConfigItem(modEnabledBox);
         LethalConfigManager.AddConfigItem(deathcauseDropdown);
         
+        // Commented out due to a bug, e.g. when adding ragdoll mods you'll have to boot into a lobby and then restart to be able to use your new ragdolls
+        /*
         if (!ConfigSettings.ListRagdollType.Contains("PLACEHOLDER"))
         {
             ragdollTypeDropdown = new TextDropDownConfigItem(ConfigSettings.RagdollType, new TextDropDownOptions
@@ -44,23 +45,21 @@ public class SetupConfig_LethalConfig
                 Description = "Determines what ragdoll will be used.",
                 RequiresRestart = false
             });
-            // Commented out due to a bug, e.g. when adding ragdoll mods you'll have to boot into a lobby and then restart to be able to use your new ragdolls
             
-            // LethalConfigManager.AddConfigItem(ragdollTypeDropdown);
-            // ragdollTypeItemAdded = true;
+            LethalConfigManager.AddConfigItem(ragdollTypeDropdown);
+            ragdollTypeItemAdded = true;
         }
-        
+        */
+
         LethalConfigManager.SetModDescription("Become a ragdoll with just one button press");
     }
 
 
     public static void UpdateRagdollTypeDropdown()
     {
-        ConfigSettings.ListRagdollType = new(Regex.Split(ConfigSettings.RagdollTypeList.Value, ";"));
-
         if (!ragdollTypeItemAdded)
         {
-            ragdollTypeDropdown = new TextDropDownConfigItem(ConfigSettings.RagdollType, new TextDropDownOptions
+            var ragdollTypeDropdown = new TextDropDownConfigItem(ConfigSettings.RagdollType, new TextDropDownOptions
             {
                 Section = "Mod Settings",
                 Name = "Type of Ragdoll",
