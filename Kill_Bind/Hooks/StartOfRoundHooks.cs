@@ -31,6 +31,7 @@ public class StartOfRoundHooks
     public static void UpdateRagdollTypeList(On.StartOfRound.orig_Start orig, StartOfRound self)
     {
         orig(self);
+        StartOfRoundInstance = self;
         if (ragdollListCreated) return;
         Main.Logger.LogDebug("Creating ragdoll list...");
         ConfigSettings.RagdollTypeList.Value = "";
@@ -43,7 +44,7 @@ public class StartOfRoundHooks
 
         UpdateRagdollTypeConfig();
         Main.Logger.LogDebug("Finished creating ragdoll list");
-        StartOfRoundInstance = self;
+        
         ragdollListCreated = true;
     }
 
@@ -56,14 +57,13 @@ public class StartOfRoundHooks
         string pattern = "Player|Ragdoll|With|Variant|Prefab| ";
         ragdollName = Regex.Replace(ragdollName, pattern, "", RegexOptions.IgnoreCase);
 
-        char[] upperNameArray = ragdollName.ToUpper().ToCharArray();
         foreach (char letter in ragdollName.ToCharArray())
         {
             string stringLetter = letter.ToString();
             int index = ragdollName.IndexOf(stringLetter);
             if (index == 0 || index == -1) continue;
 
-            string upperLetter = upperNameArray.GetValue(index).ToString();
+            string upperLetter = ragdollName.ToUpper().ToCharArray().GetValue(index).ToString();
             if (upperLetter == stringLetter)
             {
                 ragdollName = ragdollName[..index] + " " + ragdollName[index..];
