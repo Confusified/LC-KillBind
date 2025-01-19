@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using DunGen;
 using GameNetcodeStuff;
 using Kill_Bind.Config;
 using UnityEngine;
+using UnityEngine.Rendering;
 using static UnityEngine.InputSystem.InputAction;
 
 namespace Kill_Bind.Hooks.DependencyRelated;
@@ -48,14 +50,15 @@ public class KillBindHandler : MonoBehaviour
         // This fetches the int of the ragdoll as the game uses the index rather than the name for the ragdoll
         GameObject ragdoll = ragdollList.Find((GameObject x) => x.name.Contains(Regex.Replace(ConfigSettings.RagdollType.Value, " ", "", RegexOptions.None)));
         // Due to changing the name of the normal regular to "Normal", it cannot be found by this system. So it's done like this
-        // 1 == HeadBurst, which is the failsafe in case something goes wrong
+        // 1 == Head Burst, which is the failsafe in case something goes wrong
         int ragdollInt = ConfigSettings.RagdollType.Value == "Normal" ? 0 : 1;
         ragdollInt = ragdoll != null ? ragdollList.IndexOf(ragdoll) : ragdollInt;
         
+        CauseOfDeath deathCause = ConfigSettings.DeathCause.Value;
 
-        localPlayer.KillPlayer(localPlayer.thisController.velocity, spawnBody: true, causeOfDeath: ConfigSettings.DeathCause.Value, deathAnimation: ragdollInt, positionOffset: default);
+        localPlayer.KillPlayer(localPlayer.thisController.velocity, spawnBody: true, causeOfDeath: deathCause, deathAnimation: ragdollInt, positionOffset: default);
         Main.Logger.LogDebug("Player should have died now");
-        Main.Logger.LogDebug($"Ragdoll: {ConfigSettings.RagdollType.Value}, Ragdoll Int: {ragdollInt}, CoD: {ConfigSettings.DeathCause.Value}");
+        Main.Logger.LogDebug($"Ragdoll: {ConfigSettings.RagdollType.Value}, Ragdoll Int: {ragdollInt}, CoD: {deathCause}");
 
         if (ToilHead.ToilHeadMod_Present && ConfigSettings.RagdollType.Value == "Spring")
         {

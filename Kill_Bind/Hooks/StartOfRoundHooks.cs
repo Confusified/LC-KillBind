@@ -1,4 +1,3 @@
-using System.Collections.Specialized;
 using System.Text.RegularExpressions;
 using BepInEx.Configuration;
 using Kill_Bind.Config;
@@ -39,6 +38,7 @@ public class StartOfRoundHooks
         {
             string ragdollName = CleanRagdollName(ragdoll.name);
             ConfigSettings.RagdollTypeList.Value = (self.playerRagdolls.IndexOf(ragdoll) == 0) ? ragdollName : (ConfigSettings.RagdollTypeList.Value + ";" + ragdollName);
+            Main.Logger.LogDebug($"{self.playerRagdolls.IndexOf(ragdoll)}: {ragdollName}");
         }
 
         UpdateRagdollTypeConfig();
@@ -56,14 +56,15 @@ public class StartOfRoundHooks
         string pattern = "Player|Ragdoll|With|Variant|Prefab| ";
         ragdollName = Regex.Replace(ragdollName, pattern, "", RegexOptions.IgnoreCase);
 
+        char[] upperNameArray = ragdollName.ToUpper().ToCharArray();
         foreach (char letter in ragdollName.ToCharArray())
         {
             string stringLetter = letter.ToString();
             int index = ragdollName.IndexOf(stringLetter);
             if (index == 0 || index == -1) continue;
 
-            string originalLetter = ragdollName.ToUpper().ToCharArray().GetValue(index).ToString();
-            if (originalLetter == stringLetter)
+            string upperLetter = upperNameArray.GetValue(index).ToString();
+            if (upperLetter == stringLetter)
             {
                 ragdollName = ragdollName[..index] + " " + ragdollName[index..];
             }

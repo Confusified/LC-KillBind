@@ -16,16 +16,14 @@ public class ConfigHandler
         // Disable auto-saving the config, as it is still being initialised.
         cfg.SaveOnConfigSet = false;
 
-
-        RagdollTypeList = cfg.Bind("z Do Not Touch z", "Ragdoll List String", DEFAULT_RAGDOLL_TYPE, "This is used to retain the config setting for the type of ragdoll");
+        RagdollTypeList = cfg.Bind("z Do Not Touch z", "Ragdoll List String", DEFAULT_RAGDOLL_TYPE, "This is used to retain the config setting for the type of ragdoll. Editing this may cause issues");
         ListRagdollType = new(Regex.Split(RagdollTypeList.Value, ";"));
         RagdollTypeDescription = new(description: "Determines what ragdoll will be used.", acceptableValues: new AcceptableValueList<string>(ListRagdollType.ToArray()));
 
-        ModEnabled = cfg.Bind("Mod Settings", "Mod Enabled", true, "Determines whether the mod is enabled.");
-        RagdollType = cfg.Bind("Mod Settings", "Type of Ragdoll", DEFAULT_RAGDOLL_TYPE, RagdollTypeDescription);
-        DeathCause = cfg.Bind("Mod Settings", "Cause of Death", CauseOfDeath.Unknown, "Determines what the cause of death will be for your ragdoll.");
+        ModEnabled = cfg.Bind(CONFIG_SECTION, "Mod Enabled", true, "Determines whether the mod is enabled.");
 
-
+        DeathCause = cfg.Bind(CONFIG_SECTION, "Cause of Death", CauseOfDeath.Unknown, "Determines what the cause of death will be for your ragdoll.");
+        RagdollType = cfg.Bind(CONFIG_SECTION, "Type of Ragdoll", DEFAULT_RAGDOLL_TYPE, RagdollTypeDescription);
 
         ClearOrphanedEntries(cfg);
         cfg.Save();
@@ -34,7 +32,7 @@ public class ConfigHandler
         cfg.SaveOnConfigSet = true;
     }
 
-    // This removes all unused config entries, this does not bring over any old config values (i'm just too lazy to implement that (again))
+    // This removes all unused config entries, this does not bring over any old config values (i'm just too lazy to implement that)
     private static void ClearOrphanedEntries(ConfigFile cfg)
     {
         // Find the private property `OrphanedEntries` from the type `ConfigFile`
@@ -47,12 +45,13 @@ public class ConfigHandler
 }
 
 public class ConfigSettings
-{
+{   
+    internal const string CONFIG_SECTION = "Mod Settings";
     public const string DEFAULT_RAGDOLL_TYPE = "Head Burst";
     public static ConfigEntry<bool> ModEnabled;
     public static ConfigEntry<string> RagdollType;
     public static ConfigEntry<CauseOfDeath> DeathCause;
-    // Using this list will make it possible to customise your config before entering a lobby.
+    // Using this makes it possible to 'remember' what ragdoll the user used before exiting the game
     public static ConfigEntry<string> RagdollTypeList;
     public static List<string> ListRagdollType;
 }
