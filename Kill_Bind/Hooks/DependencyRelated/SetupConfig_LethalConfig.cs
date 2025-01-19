@@ -33,23 +33,6 @@ public class SetupConfig_LethalConfig
 
         LethalConfigManager.AddConfigItem(modEnabledBox);
         LethalConfigManager.AddConfigItem(deathcauseDropdown);
-        
-        // Commented out due to a bug, e.g. when adding ragdoll mods you'll have to boot into a lobby and then restart to be able to use your new ragdolls
-        /*
-        if (!ConfigSettings.ListRagdollType.Contains("PLACEHOLDER"))
-        {
-            ragdollTypeDropdown = new TextDropDownConfigItem(ConfigSettings.RagdollType, new TextDropDownOptions
-            {
-                Section = "Mod Settings",
-                Name = "Type of Ragdoll",
-                Description = "Determines what ragdoll will be used.",
-                RequiresRestart = false
-            });
-            
-            LethalConfigManager.AddConfigItem(ragdollTypeDropdown);
-            ragdollTypeItemAdded = true;
-        }
-        */
 
         LethalConfigManager.SetModDescription("Become a ragdoll with just one button press");
     }

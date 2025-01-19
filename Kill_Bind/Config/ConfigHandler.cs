@@ -16,13 +16,13 @@ public class ConfigHandler
         // Disable auto-saving the config, as it is still being initialised.
         cfg.SaveOnConfigSet = false;
 
-        RagdollTypeList = cfg.Bind<string>("z Do Not Touch z", "Ragdoll Types List", "PLACEHOLDER", "List of all ragdolls (since last startup). This allows for seamless usage between games.");
-        ListRagdollType = new(Regex.Split(RagdollTypeList.Value, ";"));
+        ListRagdollType = new(Regex.Split(RagdollTypeList, ";"));
         RagdollTypeDescription = new(description: "Determines what ragdoll will be used.", acceptableValues: new AcceptableValueList<string>(ListRagdollType.ToArray()));
 
         ModEnabled = cfg.Bind("Mod Settings", "Mod Enabled", true, "Determines whether the mod is enabled.");
-        RagdollType = cfg.Bind("Mod Settings", "Type of Ragdoll", "HeadBurst", RagdollTypeDescription);
+        RagdollType = cfg.Bind("Mod Settings", "Type of Ragdoll", "Head Burst", RagdollTypeDescription);
         DeathCause = cfg.Bind("Mod Settings", "Cause of Death", CauseOfDeath.Unknown, "Determines what the cause of death will be for your ragdoll.");
+
 
 
         ClearOrphanedEntries(cfg);
@@ -50,6 +50,6 @@ public class ConfigSettings
     public static ConfigEntry<string> RagdollType;
     public static ConfigEntry<CauseOfDeath> DeathCause;
     // Using this list will make it possible to customise your config before entering a lobby.
-    public static ConfigEntry<string> RagdollTypeList;
+    public static string RagdollTypeList;
     public static List<string> ListRagdollType;
 }
