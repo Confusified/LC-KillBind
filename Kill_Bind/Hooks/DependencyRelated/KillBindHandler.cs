@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using DunGen;
 using GameNetcodeStuff;
 using Kill_Bind.Config;
@@ -45,7 +46,7 @@ public class KillBindHandler : MonoBehaviour
         yield return waitForFrameEnd;
 
         // This fetches the int of the ragdoll as the game uses the index rather than the name for the ragdoll
-        GameObject ragdoll = ragdollList.Find((GameObject x) => x.name.Contains(ConfigSettings.RagdollType.Value));
+        GameObject ragdoll = ragdollList.Find((GameObject x) => x.name.Contains(Regex.Replace(ConfigSettings.RagdollType.Value, " ", "", RegexOptions.None)));
         // Due to changing the name of the normal regular to "Normal", it cannot be found by this system. So it's done like this
         // 1 == HeadBurst, which is the failsafe in case something goes wrong
         int ragdollInt = ConfigSettings.RagdollType.Value == "Normal" ? 0 : 1;

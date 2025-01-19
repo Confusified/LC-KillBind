@@ -9,6 +9,7 @@ namespace Kill_Bind.Hooks.DependencyRelated;
 public class ToilHead
 {
     public static bool ToilHeadMod_Present = false;
+    
     // This value is responsible for spawning a Toil-Head OR a Slayer-Player (?), depending on RNG.
     public static float ToilSlayerRagdollChance = 10f; // Default value of ToilHead is 10, so I replicate the same default
     internal static ConfigEntry<float> ToilPlayerSlayerChance = null!;
