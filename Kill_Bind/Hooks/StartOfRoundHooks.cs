@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text.RegularExpressions;
 using BepInEx.Configuration;
@@ -14,15 +13,15 @@ public class StartOfRoundHooks
     private static bool ragdollListCreated = false;
     public static void UpdateRagdollTypeConfig()
     {
-        List<string> ListRagdollType = new(Regex.Split(ConfigSettings.RagdollTypeList, ";"));
-        ConfigHandler.RagdollTypeDescription = new(description: "Determines what ragdoll will be used.", acceptableValues: new AcceptableValueList<string>(ListRagdollType.ToArray()));
+        ConfigSettings.ListRagdollType = new(Regex.Split(ConfigSettings.RagdollTypeList.Value, ";"));
+        ConfigHandler.RagdollTypeDescription = new(description: "Determines what ragdoll will be used.", acceptableValues: new AcceptableValueList<string>(ConfigSettings.ListRagdollType.ToArray()));
         string oldVal = ConfigSettings.RagdollType.Value;
 
         // By temporarily disabling the auto-saving, it'll minimize the amount of unnecessary saving.
         Main.killbindConfig.SaveOnConfigSet = false;
         Main.killbindConfig.Remove(ConfigSettings.RagdollType.Definition);
 
-        ConfigSettings.RagdollType = Main.killbindConfig.Bind("Mod Settings", "Type of Ragdoll", "Head Burst", ConfigHandler.RagdollTypeDescription);
+        ConfigSettings.RagdollType = Main.killbindConfig.Bind("Mod Settings", "Type of Ragdoll", "HeadBurst", ConfigHandler.RagdollTypeDescription);
         ConfigSettings.RagdollType.Value = oldVal;
         Main.killbindConfig.Save();
 
@@ -35,11 +34,11 @@ public class StartOfRoundHooks
         orig(self);
         if (ragdollListCreated) return;
         Main.Logger.LogDebug("Creating ragdoll list...");
-        ConfigSettings.RagdollTypeList = "";
+        ConfigSettings.RagdollTypeList.Value = "";
         foreach (GameObject ragdoll in self.playerRagdolls)
         {
             string ragdollName = CleanRagdollName(ragdoll.name);
-            ConfigSettings.RagdollTypeList = (self.playerRagdolls.IndexOf(ragdoll) == 0) ? ragdollName : (ConfigSettings.RagdollTypeList + ";" + ragdollName);
+            ConfigSettings.RagdollTypeList.Value = (self.playerRagdolls.IndexOf(ragdoll) == 0) ? ragdollName : (ConfigSettings.RagdollTypeList.Value + ";" + ragdollName);
         }
 
         UpdateRagdollTypeConfig();
