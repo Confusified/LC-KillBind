@@ -4,11 +4,13 @@ using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using BepInEx.Logging;
+using HarmonyLib;
 using Kill_Bind.Config;
 using Kill_Bind.Hooks;
 using Kill_Bind.Hooks.DependencyRelated;
 using LethalCompanyInputUtils.Api;
 using LethalCompanyInputUtils.BindingPathEnums;
+using MonoMod.RuntimeDetour;
 using UnityEngine.InputSystem;
 
 namespace Kill_Bind;
@@ -35,6 +37,7 @@ public class Main : BaseUnityPlugin
     internal new static ManualLogSource Logger { get; private set; } = null!;
     private static readonly string configLocation = Utility.CombinePaths(Paths.ConfigPath + "\\" + MyPluginInfo.PLUGIN_GUID[9..21].Replace(".", "\\")) + MyPluginInfo.PLUGIN_GUID[..8];
     internal static ConfigFile killbindConfig = new(configLocation + ".cfg", false);
+    internal static List<IDetour> Hooks { get; set; } = new List<IDetour>();
     public static readonly KillBind_Inputs InputActionInstance = new();
 
     public void Awake()
@@ -63,7 +66,8 @@ public class Main : BaseUnityPlugin
     {
         Logger.LogDebug("Hooking...");
 
-        On.StartOfRound.Start += StartOfRoundHooks.UpdateRagdollTypeList;
+        Hooks.Add(new Hook(typeof(StartOfRound).GetMethod("Start", AccessTools.allDeclared), StartOfRoundHooks.UpdateRagdollTypeList));
+        // On.StartOfRound.Start += StartOfRoundHooks.UpdateRagdollTypeList;
         Logger.LogDebug("Hooked: StartOfRound, Start");
 
         InputActionInstance.ActionKillBind.performed += KillBindHandler.OnPressKillBind;
