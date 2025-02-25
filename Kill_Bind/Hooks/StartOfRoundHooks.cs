@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using BepInEx.Configuration;
 using Kill_Bind.Config;
@@ -9,6 +11,7 @@ namespace Kill_Bind.Hooks;
 public class StartOfRoundHooks
 {
     public static StartOfRound StartOfRoundInstance;
+    public static List<GameObject> PlayerRagdollsList {get; private set;} = null!;
     private static bool ragdollListCreated = false;
     public static void UpdateRagdollTypeConfig()
     {
@@ -28,18 +31,19 @@ public class StartOfRoundHooks
         Main.killbindConfig.SaveOnConfigSet = true;
     }
 
-    public static void UpdateRagdollTypeList(On.StartOfRound.orig_Start orig, StartOfRound self)
+    public static void UpdateRagdollTypeList(Action<StartOfRound> orig, StartOfRound self)
     {
         orig(self);
         StartOfRoundInstance = self;
         if (ragdollListCreated) return;
         Main.Logger.LogDebug("Creating ragdoll list...");
         ConfigSettings.RagdollTypeList.Value = "";
-        foreach (GameObject ragdoll in self.playerRagdolls)
+        PlayerRagdollsList = self.playerRagdolls;
+        foreach (GameObject ragdoll in PlayerRagdollsList)
         {
             string ragdollName = CleanRagdollName(ragdoll.name);
-            ConfigSettings.RagdollTypeList.Value = (self.playerRagdolls.IndexOf(ragdoll) == 0) ? ragdollName : (ConfigSettings.RagdollTypeList.Value + ";" + ragdollName);
-            Main.Logger.LogDebug($"{self.playerRagdolls.IndexOf(ragdoll)}: {ragdollName}");
+            ConfigSettings.RagdollTypeList.Value = (PlayerRagdollsList.IndexOf(ragdoll) == 0) ? ragdollName : (ConfigSettings.RagdollTypeList.Value + ";" + ragdollName);
+            Main.Logger.LogDebug($"{PlayerRagdollsList.IndexOf(ragdoll)}: {ragdollName}");
         }
 
         UpdateRagdollTypeConfig();
