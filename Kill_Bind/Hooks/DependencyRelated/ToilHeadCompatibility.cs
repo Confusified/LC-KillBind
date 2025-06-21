@@ -6,7 +6,7 @@ using GameNetcodeStuff;
 
 namespace Kill_Bind.Hooks.DependencyRelated;
 
-public class ToilHead
+public static class ToilHead
 {
     public static bool ToilHeadMod_Present = false;
     

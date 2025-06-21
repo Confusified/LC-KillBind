@@ -5,7 +5,7 @@ using LethalConfig.ConfigItems.Options;
 
 namespace Kill_Bind.Hooks.DependencyRelated;
 
-public class SetupConfig_LethalConfig
+public static class SetupConfig_LethalConfig
 {
     public static bool LethalConfigFound = false;
     private static void Activate()

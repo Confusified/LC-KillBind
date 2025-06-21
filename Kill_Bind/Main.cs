@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
 using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
@@ -14,6 +15,7 @@ using MonoMod.RuntimeDetour;
 using UnityEngine.InputSystem;
 
 namespace Kill_Bind;
+
 public class KillBind_Inputs : LcInputActions
 {
     [InputAction(KeyboardControl.Backspace, Name = "Suicide", ActionType = InputActionType.Button)]
@@ -58,8 +60,6 @@ public class Main : BaseUnityPlugin
         Logger.LogDebug("Activating Soft Dependencies...");
 
         SoftDependencyAttribute.Init(Instance);
-
-        Logger.LogDebug("Soft Dependencies Activated.");
     }
 
     private static void HookMethods()
@@ -105,13 +105,16 @@ internal class SoftDependencyAttribute : BepInDependency
         IEnumerable<SoftDependencyAttribute> attributes = source.GetType().GetCustomAttributes<SoftDependencyAttribute>();
         foreach (SoftDependencyAttribute attr in attributes)
         {
-            if (attr == null) continue;
-            if (Chainloader.PluginInfos.ContainsKey(attr.DependencyGUID))
+            Task.Run(() =>
             {
-                Main.Logger.LogDebug("Found compatible mod: " + attr.DependencyGUID);
-                attr.Handler.GetMethod("Activate", bindingFlags)?.Invoke(null, null);
-                attr.Handler = null!;
-            }
+                if (attr == null) return;
+                if (Chainloader.PluginInfos.ContainsKey(attr.DependencyGUID))
+                {
+                    Main.Logger.LogDebug("Found compatible mod: " + attr.DependencyGUID);
+                    attr.Handler.GetMethod("Activate", bindingFlags)?.Invoke(null, null);
+                    attr.Handler = null!;
+                }
+            });
         }
     }
 }
