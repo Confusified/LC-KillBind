@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Reflection;
-using System.Threading.Tasks;
 using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
@@ -105,16 +104,13 @@ internal class SoftDependencyAttribute : BepInDependency
         IEnumerable<SoftDependencyAttribute> attributes = source.GetType().GetCustomAttributes<SoftDependencyAttribute>();
         foreach (SoftDependencyAttribute attr in attributes)
         {
-            Task.Run(() =>
+            if (attr == null) continue;
+            if (Chainloader.PluginInfos.ContainsKey(attr.DependencyGUID))
             {
-                if (attr == null) return;
-                if (Chainloader.PluginInfos.ContainsKey(attr.DependencyGUID))
-                {
-                    Main.Logger.LogDebug("Found compatible mod: " + attr.DependencyGUID);
-                    attr.Handler.GetMethod("Activate", bindingFlags)?.Invoke(null, null);
-                    attr.Handler = null!;
-                }
-            });
+                Main.Logger.LogDebug("Found compatible mod: " + attr.DependencyGUID);
+                attr.Handler.GetMethod("Activate", bindingFlags)?.Invoke(null, null);
+                attr.Handler = null!;
+            }
         }
     }
 }
