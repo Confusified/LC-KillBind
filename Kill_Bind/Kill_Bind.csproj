@@ -2,7 +2,7 @@
 
     <!-- BepInEx Properties -->
     <PropertyGroup>
-        <AssemblyName>KillBind.Confusified.com.GitHub</AssemblyName>
+        <AssemblyName>com.Confusified.KillBind</AssemblyName>
         <Product>Kill Bind</Product>
         <!-- Change to whatever version you're currently on. -->
         <Version>2.3.5</Version>
