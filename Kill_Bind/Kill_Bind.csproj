@@ -5,7 +5,7 @@
         <AssemblyName>KillBind.Confusified.com.GitHub</AssemblyName>
         <Product>Kill Bind</Product>
         <!-- Change to whatever version you're currently on. -->
-        <Version>2.3.4</Version>
+        <Version>2.3.5</Version>
     </PropertyGroup>
 
     <!-- Project Properties -->

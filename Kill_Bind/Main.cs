@@ -70,10 +70,10 @@ public class Main : BaseUnityPlugin
         // On.StartOfRound.Start += StartOfRoundHooks.UpdateRagdollTypeList;
         Logger.LogDebug("Hooked: StartOfRound, Start");
 
+        Logger.LogDebug("Finished Hooking.");
+
         InputActionInstance.ActionKillBind.performed += KillBindHandler.OnPressKillBind;
         Logger.LogDebug("Bound KillBind's Keybind.");
-
-        Logger.LogDebug("Finished Hooking.");
     }
 }
 
