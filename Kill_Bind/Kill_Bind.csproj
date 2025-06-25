@@ -5,7 +5,7 @@
         <AssemblyName>com.Confusified.KillBind</AssemblyName>
         <Product>Kill Bind</Product>
         <!-- Change to whatever version you're currently on. -->
-        <Version>2.3.6</Version>
+        <Version>2.4.0</Version>
     </PropertyGroup>
 
     <!-- Project Properties -->

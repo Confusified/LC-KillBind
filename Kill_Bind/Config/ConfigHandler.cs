@@ -23,6 +23,7 @@ public class ConfigHandler
         ModEnabled = cfg.Bind(CONFIG_SECTION, "Mod Enabled", true, "Determines whether the mod is enabled.");
 
         DeathCause = cfg.Bind(CONFIG_SECTION, "Cause of Death", CauseOfDeath.Unknown, "Determines what the cause of death will be for your ragdoll.");
+        DeathCauseMatchesRagdollType = cfg.Bind(CONFIG_SECTION, "Accurate ragdolls", false, "When enabled causes your Cause of Death to match your selected ragdoll type.");
         RagdollType = cfg.Bind(CONFIG_SECTION, "Type of Ragdoll", DEFAULT_RAGDOLL_TYPE, RagdollTypeDescription);
 
         ClearOrphanedEntries(cfg);
@@ -44,13 +45,14 @@ public class ConfigHandler
     }
 }
 
-public class ConfigSettings
+public struct ConfigSettings
 {   
     internal const string CONFIG_SECTION = "Mod Settings";
     public const string DEFAULT_RAGDOLL_TYPE = "Head Burst";
     public static ConfigEntry<bool> ModEnabled;
     public static ConfigEntry<string> RagdollType;
     public static ConfigEntry<CauseOfDeath> DeathCause;
+    public static ConfigEntry<bool> DeathCauseMatchesRagdollType;
     // Using this makes it possible to 'remember' what ragdoll the user used before exiting the game
     public static ConfigEntry<string> RagdollTypeList;
     public static List<string> ListRagdollType;
