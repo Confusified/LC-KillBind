@@ -94,6 +94,9 @@ public class KillBindHandler : MonoBehaviour
                 case 8: // Taken from BushWolfEnemy
                     deathCause = CauseOfDeath.Mauling;
                     break;
+                case 9: // Taken from GiantKiwiAI
+                    deathCause = CauseOfDeath.Stabbing;
+                    break;
                 default: // If not added yet
                     deathCause = CauseOfDeath.Unknown;
                     break;
