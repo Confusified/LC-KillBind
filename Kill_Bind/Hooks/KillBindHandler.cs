@@ -73,43 +73,7 @@ public class KillBindHandler : MonoBehaviour
         bool matchRagdoll = ConfigSettings.DeathCauseMatchesRagdollType.Value;
         if (matchRagdoll)
         {
-            switch (ragdollInt)
-            {
-                case 0: // Taken from MouthDogAI & CaveDwellerAI & CrawlerAI & HoarderBugAI & JesterAI & PufferAI & SandSpiderAI, (Some use this with a different CoD)
-                    deathCause = CauseOfDeath.Mauling;
-                    break;
-                case 1: //
-                    deathCause = CauseOfDeath.Unknown;
-                    break;
-                case 2: // Taken from SpringManAI
-                    deathCause = CauseOfDeath.Mauling;
-                    break;
-                case 3: // Taken from RedLocustBees
-                    deathCause = CauseOfDeath.Electrocution;
-                    break;
-                case 4: // Taken from MaskedPlayerEnemy - Comedy variant
-                    deathCause = CauseOfDeath.Strangulation;
-                    break;
-                case 5: // Tragedy variant
-                    deathCause = CauseOfDeath.Strangulation;
-                    break;
-                case 6: // Taken from RadMechAI
-                    deathCause = CauseOfDeath.Burning;
-                    break;
-                case 7: // Taken from ClaySurgeonAI
-                    deathCause = CauseOfDeath.Snipped;
-                    break;
-                case 8: // Taken from BushWolfEnemy
-                    deathCause = CauseOfDeath.Mauling;
-                    break;
-                case 9: // Taken from GiantKiwiAI
-                    deathCause = CauseOfDeath.Stabbing;
-                    break;
-                default: // If not added yet
-                    deathCause = CauseOfDeath.Unknown;
-                    break;
-
-            }
+            deathCause = SetAccurateCauseOfDeath(ragdollInt);
         }
 
         Main.Logger.LogDebug("Player should have died now");
@@ -120,5 +84,48 @@ public class KillBindHandler : MonoBehaviour
             Main.Logger.LogDebug("Attempting to replace the ragdoll with a ToilHead variant");
             ToilHead.CreateToilheadRagdoll(localPlayer);
         }
+    }
+
+    public static CauseOfDeath SetAccurateCauseOfDeath(int ragdollInt)
+    {
+        CauseOfDeath deathCause;
+        switch (ragdollInt)
+        {
+            case 0: // Taken from MouthDogAI & CaveDwellerAI & CrawlerAI & HoarderBugAI & JesterAI & PufferAI & SandSpiderAI, (Some use this with a different CoD)
+                deathCause = CauseOfDeath.Mauling;
+                break;
+            case 1: //
+                deathCause = CauseOfDeath.Unknown;
+                break;
+            case 2: // Taken from SpringManAI
+                deathCause = CauseOfDeath.Mauling;
+                break;
+            case 3: // Taken from RedLocustBees
+                deathCause = CauseOfDeath.Electrocution;
+                break;
+            case 4: // Taken from MaskedPlayerEnemy - Comedy variant
+                deathCause = CauseOfDeath.Strangulation;
+                break;
+            case 5: // Tragedy variant
+                deathCause = CauseOfDeath.Strangulation;
+                break;
+            case 6: // Taken from RadMechAI
+                deathCause = CauseOfDeath.Burning;
+                break;
+            case 7: // Taken from ClaySurgeonAI
+                deathCause = CauseOfDeath.Snipped;
+                break;
+            case 8: // Taken from BushWolfEnemy
+                deathCause = CauseOfDeath.Mauling;
+                break;
+            case 9: // Taken from GiantKiwiAI
+                deathCause = CauseOfDeath.Stabbing;
+                break;
+            default: // If not added yet
+                deathCause = CauseOfDeath.Unknown;
+                break;
+
+        }
+        return deathCause;
     }
 }
