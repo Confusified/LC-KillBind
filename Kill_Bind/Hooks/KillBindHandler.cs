@@ -17,38 +17,38 @@ public class KillBindHandler : MonoBehaviour
         // Defining variables
         bool performedCallback = callbackContext.performed;
         if (!performedCallback) return;
-        
+
         bool modEnabled = ConfigSettings.ModEnabled.Value;
         if (!modEnabled) return;
 
-        GameNetworkManager networkManager = GameNetworkManager.Instance;
-        PlayerControllerB? player = networkManager.localPlayerController;
+        GameNetworkManager? networkManager = GameNetworkManager.Instance;
+        PlayerControllerB? player = networkManager?.localPlayerController;
         if (player == null) return;
+
         bool isDead = player.isPlayerDead;
+        if (isDead) return;
+
+        HUDManager hudManagerInstance = HUDManager.Instance;
         bool isTyping = player.isTypingChat;
+        bool hasTypingIndicator = hudManagerInstance.typingIndicator.enabled;
+        if (hudManagerInstance == null || hasTypingIndicator || isTyping) return;
+
         bool inTerminalMenu = player.inTerminalMenu;
 
         Terminal terminal = UnityEngine.Object.FindObjectOfType<Terminal>(); // does not support multiple terminals
         bool terminalInUse = terminal.terminalInUse;
-
-        HUDManager hudManagerInstance = HUDManager.Instance;
-        bool hasTypingIndicator = hudManagerInstance.typingIndicator.enabled;
+        if (terminal == null || terminalInUse && inTerminalMenu) return;
 
         QuickMenuManager quickmenuInstance = player.quickMenuManager;
         bool isMenuOpen = quickmenuInstance.isMenuOpen;
+        if (quickmenuInstance == null || isMenuOpen) return;
 
         bool inShipPhase = StartOfRoundHooks.StartOfRoundInstance.inShipPhase;
+        if (inShipPhase) return;
 
         Main.Logger.LogDebug("Keybind for KillBind has been pressed.");
 
         // We only want the kill bind to actually do something when the situation is valid
-
-
-        if (isDead) return;
-        if (inShipPhase) return;
-        if (hudManagerInstance == null || hasTypingIndicator || isTyping) return;
-        if (terminal == null || terminalInUse && inTerminalMenu) return;
-        if (quickmenuInstance == null || isMenuOpen) return;
 
         player.StartCoroutine(KillAfterYield(player));
         // CoroutineHelper.Start(KillAfterYield(player));
