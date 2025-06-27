@@ -16,26 +16,34 @@ public class KillBindHandler : MonoBehaviour
     {
         // Defining variables
         bool performedCallback = callbackContext.performed;
+        if (!performedCallback) return;
+        
         bool modEnabled = ConfigSettings.ModEnabled.Value;
+        if (!modEnabled) return;
+
         GameNetworkManager networkManager = GameNetworkManager.Instance;
-        HUDManager hudManagerInstance = HUDManager.Instance;
-        Terminal terminal = UnityEngine.Object.FindObjectOfType<Terminal>(); // does not support multiple terminals
-        bool terminalInUse = terminal.terminalInUse;
         PlayerControllerB? player = networkManager.localPlayerController;
+        if (player == null) return;
         bool isDead = player.isPlayerDead;
         bool isTyping = player.isTypingChat;
-        bool hasTypingIndicator = hudManagerInstance.typingIndicator.enabled;
         bool inTerminalMenu = player.inTerminalMenu;
+
+        Terminal terminal = UnityEngine.Object.FindObjectOfType<Terminal>(); // does not support multiple terminals
+        bool terminalInUse = terminal.terminalInUse;
+
+        HUDManager hudManagerInstance = HUDManager.Instance;
+        bool hasTypingIndicator = hudManagerInstance.typingIndicator.enabled;
+
         QuickMenuManager quickmenuInstance = player.quickMenuManager;
         bool isMenuOpen = quickmenuInstance.isMenuOpen;
+
         bool inShipPhase = StartOfRoundHooks.StartOfRoundInstance.inShipPhase;
 
         Main.Logger.LogDebug("Keybind for KillBind has been pressed.");
 
         // We only want the kill bind to actually do something when the situation is valid
-        if (!performedCallback) return;
-        if (!modEnabled) return;
-        if (player == null) return;
+
+
         if (isDead) return;
         if (inShipPhase) return;
         if (hudManagerInstance == null || hasTypingIndicator || isTyping) return;

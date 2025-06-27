@@ -45,7 +45,7 @@ public class ConfigHandler
     }
 }
 
-public struct ConfigSettings
+public class ConfigSettings
 {   
     internal const string CONFIG_SECTION = "Mod Settings";
     public const string DEFAULT_RAGDOLL_TYPE = "Head Burst";
