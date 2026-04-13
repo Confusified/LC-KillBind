@@ -114,7 +114,7 @@ public class KillBindHandler : MonoBehaviour
                 deathCause = CauseOfDeath.Burning;
                 break;
             case 7: // Taken from ClaySurgeonAI
-                deathCause = CauseOfDeath.Snipped;
+                deathCause = CauseOfDeath.Snipping;
                 break;
             case 8: // Taken from BushWolfEnemy
                 deathCause = CauseOfDeath.Mauling;
