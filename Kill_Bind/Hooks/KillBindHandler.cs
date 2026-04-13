@@ -76,6 +76,7 @@ public class KillBindHandler : MonoBehaviour
             deathCause = SetAccurateCauseOfDeath(ragdollInt);
         }
 
+        localPlayer.KillPlayer(localPlayer.thisController.velocity, spawnBody: true, causeOfDeath: deathCause, deathAnimation: ragdollInt, positionOffset: default, setOverrideDropItems: false);
         Main.Logger.LogDebug("Player should have died now");
         Main.Logger.LogDebug($"Ragdoll: {ragdollTypeValue}, Ragdoll Int: {ragdollInt}, CoD: {deathCause}");
         localPlayer.KillPlayer(localPlayer.thisController.velocity, spawnBody: true, causeOfDeath: deathCause, deathAnimation: ragdollInt, positionOffset: default);
