@@ -31,6 +31,15 @@ public static class SetupConfig_LethalConfig
         });
         LethalConfigManager.AddConfigItem(deathcauseDropdown);
 
+        var codMatchRagdollToggle = new BoolCheckBoxConfigItem(ConfigSettings.DeathCauseMatchesRagdollType, new BoolCheckBoxOptions
+        {
+            Section = "Mod Settings",
+            Name = "Accurate ragdolls",
+            Description = "When enabled causes your Cause of Death to match your selected ragdoll type.",
+            RequiresRestart = false
+        });
+        LethalConfigManager.AddConfigItem(codMatchRagdollToggle);
+
         LethalConfigManager.SetModDescription("Become a ragdoll with just one button press");
     }
 

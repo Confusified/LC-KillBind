@@ -16,31 +16,39 @@ public class KillBindHandler : MonoBehaviour
     {
         // Defining variables
         bool performedCallback = callbackContext.performed;
+        if (!performedCallback) return;
+
         bool modEnabled = ConfigSettings.ModEnabled.Value;
-        GameNetworkManager networkManager = GameNetworkManager.Instance;
-        HUDManager hudManagerInstance = HUDManager.Instance;
-        Terminal terminal = UnityEngine.Object.FindObjectOfType<Terminal>(); // does not support multiple terminals
-        bool terminalInUse = terminal.terminalInUse;
-        PlayerControllerB? player = networkManager.localPlayerController;
+        if (!modEnabled) return;
+
+        GameNetworkManager? networkManager = GameNetworkManager.Instance;
+        PlayerControllerB? player = networkManager?.localPlayerController;
+        if (player == null) return;
+
         bool isDead = player.isPlayerDead;
+        if (isDead) return;
+
+        HUDManager hudManagerInstance = HUDManager.Instance;
         bool isTyping = player.isTypingChat;
         bool hasTypingIndicator = hudManagerInstance.typingIndicator.enabled;
+        if (hudManagerInstance == null || hasTypingIndicator || isTyping) return;
+
         bool inTerminalMenu = player.inTerminalMenu;
+
+        Terminal terminal = UnityEngine.Object.FindObjectOfType<Terminal>(); // does not support multiple terminals
+        bool terminalInUse = terminal.terminalInUse;
+        if (terminal == null || terminalInUse && inTerminalMenu) return;
+
         QuickMenuManager quickmenuInstance = player.quickMenuManager;
         bool isMenuOpen = quickmenuInstance.isMenuOpen;
+        if (quickmenuInstance == null || isMenuOpen) return;
+
         bool inShipPhase = StartOfRoundHooks.StartOfRoundInstance.inShipPhase;
+        if (inShipPhase) return;
 
         Main.Logger.LogDebug("Keybind for KillBind has been pressed.");
 
         // We only want the kill bind to actually do something when the situation is valid
-        if (!performedCallback) return;
-        if (!modEnabled) return;
-        if (player == null) return;
-        if (isDead) return;
-        if (inShipPhase) return;
-        if (hudManagerInstance == null || hasTypingIndicator || isTyping) return;
-        if (terminal == null || terminalInUse && inTerminalMenu) return;
-        if (quickmenuInstance == null || isMenuOpen) return;
 
         player.StartCoroutine(KillAfterYield(player));
         // CoroutineHelper.Start(KillAfterYield(player));
@@ -51,23 +59,74 @@ public class KillBindHandler : MonoBehaviour
 
         yield return waitForFrameEnd;
 
+        string ragdollTypeValue = ConfigSettings.RagdollType.Value;
         // This fetches the int of the ragdoll as the game uses the index rather than the name for the ragdoll
-        GameObject ragdoll = StartOfRoundHooks.PlayerRagdollsList.Find((GameObject x) => x.name.Contains(Regex.Replace(ConfigSettings.RagdollType.Value, " ", "", RegexOptions.None)));
+        GameObject ragdoll = StartOfRoundHooks.PlayerRagdollsList.Find((GameObject x) => x.name.Contains(Regex.Replace(ragdollTypeValue, " ", "", RegexOptions.None)));
+
         // Due to changing the name of the normal regular to "Normal", it cannot be found by this system. So it's done like this
         // 1 == Head Burst, which is the failsafe in case something goes wrong
-        int ragdollInt = ConfigSettings.RagdollType.Value == "Normal" ? 0 : 1;
+
+        int ragdollInt = ragdollTypeValue == "Normal" ? 0 : 1;
         ragdollInt = ragdoll != null ? StartOfRoundHooks.PlayerRagdollsList.IndexOf(ragdoll) : ragdollInt;
 
         CauseOfDeath deathCause = ConfigSettings.DeathCause.Value;
+        bool matchRagdoll = ConfigSettings.DeathCauseMatchesRagdollType.Value;
+        if (matchRagdoll)
+        {
+            deathCause = SetAccurateCauseOfDeath(ragdollInt);
+        }
 
         localPlayer.KillPlayer(localPlayer.thisController.velocity, spawnBody: true, causeOfDeath: deathCause, deathAnimation: ragdollInt, positionOffset: default, setOverrideDropItems: false);
         Main.Logger.LogDebug("Player should have died now");
-        Main.Logger.LogDebug($"Ragdoll: {ConfigSettings.RagdollType.Value}, Ragdoll Int: {ragdollInt}, CoD: {deathCause}");
-
-        if (ToilHead.ToilHeadMod_Present && ConfigSettings.RagdollType.Value == "Spring")
+        Main.Logger.LogDebug($"Ragdoll: {ragdollTypeValue}, Ragdoll Int: {ragdollInt}, CoD: {deathCause}");
+        localPlayer.KillPlayer(localPlayer.thisController.velocity, spawnBody: true, causeOfDeath: deathCause, deathAnimation: ragdollInt, positionOffset: default);
+        if (ToilHead.ToilHeadMod_Present && ragdollTypeValue == "Spring")
         {
             Main.Logger.LogDebug("Attempting to replace the ragdoll with a ToilHead variant");
             ToilHead.CreateToilheadRagdoll(localPlayer);
         }
+    }
+
+    public static CauseOfDeath SetAccurateCauseOfDeath(int ragdollInt)
+    {
+        CauseOfDeath deathCause;
+        switch (ragdollInt)
+        {
+            case 0: // Taken from MouthDogAI & CaveDwellerAI & CrawlerAI & HoarderBugAI & JesterAI & PufferAI & SandSpiderAI, (Some use this with a different CoD)
+                deathCause = CauseOfDeath.Mauling;
+                break;
+            case 1: //
+                deathCause = CauseOfDeath.Unknown;
+                break;
+            case 2: // Taken from SpringManAI
+                deathCause = CauseOfDeath.Mauling;
+                break;
+            case 3: // Taken from RedLocustBees
+                deathCause = CauseOfDeath.Electrocution;
+                break;
+            case 4: // Taken from MaskedPlayerEnemy - Comedy variant
+                deathCause = CauseOfDeath.Strangulation;
+                break;
+            case 5: // Tragedy variant
+                deathCause = CauseOfDeath.Strangulation;
+                break;
+            case 6: // Taken from RadMechAI
+                deathCause = CauseOfDeath.Burning;
+                break;
+            case 7: // Taken from ClaySurgeonAI
+                deathCause = CauseOfDeath.Snipped;
+                break;
+            case 8: // Taken from BushWolfEnemy
+                deathCause = CauseOfDeath.Mauling;
+                break;
+            case 9: // Taken from GiantKiwiAI
+                deathCause = CauseOfDeath.Stabbing;
+                break;
+            default: // If not added yet
+                deathCause = CauseOfDeath.Unknown;
+                break;
+
+        }
+        return deathCause;
     }
 }
