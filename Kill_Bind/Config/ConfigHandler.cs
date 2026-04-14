@@ -16,8 +16,8 @@ public class ConfigHandler
         // Disable auto-saving the config, as it is still being initialised.
         cfg.SaveOnConfigSet = false;
 
-        RagdollTypeList = cfg.Bind("z Do Not Touch z", "Ragdoll List String", DEFAULT_RAGDOLL_TYPE, "This is used to retain the config setting for the type of ragdoll. Editing this may cause issues");
-        ListRagdollType = new(Regex.Split(RagdollTypeList.Value, ";"));
+        ragdollTypeList = DEFAULT_RAGDOLL_TYPE; //RagdollTypeList = cfg.Bind("z Do Not Touch z", "Ragdoll List String", DEFAULT_RAGDOLL_TYPE, "This is used to retain the config setting for the type of ragdoll. Editing this may cause issues");
+        ListRagdollType = new(Regex.Split(ragdollTypeList, ";"));
         RagdollTypeDescription = new(description: "Determines what ragdoll will be used.", acceptableValues: new AcceptableValueList<string>(ListRagdollType.ToArray()));
 
         ModEnabled = cfg.Bind(CONFIG_SECTION, "Mod Enabled", true, "Determines whether the mod is enabled.");
@@ -53,7 +53,8 @@ public class ConfigSettings
     public static ConfigEntry<string> RagdollType;
     public static ConfigEntry<CauseOfDeath> DeathCause;
     public static ConfigEntry<bool> DeathCauseMatchesRagdollType;
-    // Using this makes it possible to 'remember' what ragdoll the user used before exiting the game
-    public static ConfigEntry<string> RagdollTypeList;
+    // Using this makes it possible to 'remember' what ragdoll the user used before exiting the game (CURRENTLY NOT IN USE)
+    //public static ConfigEntry<string> RagdollTypeList;
+    public static string ragdollTypeList;
     public static List<string> ListRagdollType;
 }
