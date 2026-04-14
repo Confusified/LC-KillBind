@@ -15,7 +15,7 @@ public class StartOfRoundHooks
     private static bool ragdollListCreated = false;
     public static void UpdateRagdollTypeConfig()
     {
-        ConfigSettings.ListRagdollType = new(Regex.Split(ConfigSettings.ragdollTypeList, ";"));
+        ConfigSettings.ListRagdollType = new(Regex.Split(ConfigSettings.RagdollTypeList.Value, ";"));
         ConfigHandler.RagdollTypeDescription = new(description: "Determines what ragdoll will be used.", acceptableValues: new AcceptableValueList<string>(ConfigSettings.ListRagdollType.ToArray()));
         string oldVal = ConfigSettings.RagdollType.Value;
 
@@ -23,7 +23,7 @@ public class StartOfRoundHooks
         Main.killbindConfig.SaveOnConfigSet = false;
         Main.killbindConfig.Remove(ConfigSettings.RagdollType.Definition);
 
-        ConfigSettings.RagdollType = Main.killbindConfig.Bind("Mod Settings", "Type of Ragdoll", "Head Burst", ConfigHandler.RagdollTypeDescription);
+        ConfigSettings.RagdollType = Main.killbindConfig.Bind("Mod Settings", "Type of Ragdoll", "HeadBurst", ConfigHandler.RagdollTypeDescription);
         ConfigSettings.RagdollType.Value = oldVal;
         Main.killbindConfig.Save();
 
@@ -37,12 +37,12 @@ public class StartOfRoundHooks
         StartOfRoundInstance = self;
         if (ragdollListCreated) return;
         Main.Logger.LogDebug("Creating ragdoll list...");
-        ConfigSettings.ragdollTypeList = "";
+        ConfigSettings.RagdollTypeList.Value = "";
         PlayerRagdollsList = self.playerRagdolls;
         foreach (GameObject ragdoll in PlayerRagdollsList)
         {
             string ragdollName = CleanRagdollName(ragdoll.name);
-            ConfigSettings.ragdollTypeList = (PlayerRagdollsList.IndexOf(ragdoll) == 0) ? ragdollName : (ConfigSettings.ragdollTypeList + ";" + ragdollName);
+            ConfigSettings.RagdollTypeList.Value = (PlayerRagdollsList.IndexOf(ragdoll) == 0) ? ragdollName : (ConfigSettings.RagdollTypeList.Value + ";" + ragdollName);
             Main.Logger.LogDebug($"{PlayerRagdollsList.IndexOf(ragdoll)}: {ragdollName}");
         }
 
