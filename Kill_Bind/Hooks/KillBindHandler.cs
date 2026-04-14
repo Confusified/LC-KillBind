@@ -76,10 +76,9 @@ public class KillBindHandler : MonoBehaviour
             deathCause = SetAccurateCauseOfDeath(ragdollInt);
         }
 
-        localPlayer.KillPlayer(localPlayer.thisController.velocity, spawnBody: true, causeOfDeath: deathCause, deathAnimation: ragdollInt, positionOffset: default, setOverrideDropItems: false);
         Main.Logger.LogDebug("Player should have died now");
         Main.Logger.LogDebug($"Ragdoll: {ragdollTypeValue}, Ragdoll Int: {ragdollInt}, CoD: {deathCause}");
-        localPlayer.KillPlayer(localPlayer.thisController.velocity, spawnBody: true, causeOfDeath: deathCause, deathAnimation: ragdollInt, positionOffset: default);
+        localPlayer.KillPlayer(localPlayer.thisController.velocity, spawnBody: true, causeOfDeath: deathCause, deathAnimation: ragdollInt, positionOffset: default, setOverrideDropItems: false);
         if (ToilHead.ToilHeadMod_Present && ragdollTypeValue == "Spring")
         {
             Main.Logger.LogDebug("Attempting to replace the ragdoll with a ToilHead variant");
@@ -95,7 +94,7 @@ public class KillBindHandler : MonoBehaviour
             case 0: // Taken from MouthDogAI & CaveDwellerAI & CrawlerAI & HoarderBugAI & JesterAI & PufferAI & SandSpiderAI, (Some use this with a different CoD)
                 deathCause = CauseOfDeath.Mauling;
                 break;
-            case 1: //
+            case 1: // Taken from DressGirlAI
                 deathCause = CauseOfDeath.Unknown;
                 break;
             case 2: // Taken from SpringManAI
@@ -107,7 +106,7 @@ public class KillBindHandler : MonoBehaviour
             case 4: // Taken from MaskedPlayerEnemy - Comedy variant
                 deathCause = CauseOfDeath.Strangulation;
                 break;
-            case 5: // Tragedy variant
+            case 5: // Taken from MaskedPlayerEnemy - Tragedy variant
                 deathCause = CauseOfDeath.Strangulation;
                 break;
             case 6: // Taken from RadMechAI
@@ -121,6 +120,9 @@ public class KillBindHandler : MonoBehaviour
                 break;
             case 9: // Taken from GiantKiwiAI
                 deathCause = CauseOfDeath.Stabbing;
+                break;
+            case 10: // Taken from PumaAI
+                deathCause = CauseOfDeath.Scratching;
                 break;
             default: // If not added yet
                 deathCause = CauseOfDeath.Unknown;
