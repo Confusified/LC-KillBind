@@ -10,7 +10,6 @@ using Kill_Bind.Hooks;
 using Kill_Bind.Hooks.DependencyRelated;
 using LethalCompanyInputUtils.Api;
 using LethalCompanyInputUtils.BindingPathEnums;
-using Mono.Cecil.Cil;
 using MonoMod.RuntimeDetour;
 using UnityEngine.InputSystem;
 
