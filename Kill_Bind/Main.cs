@@ -36,7 +36,8 @@ public class Main : BaseUnityPlugin
 {
     public static Main Instance { get; private set; } = null!;
     internal new static ManualLogSource Logger { get; private set; } = null!;
-    private static readonly string configLocation = Utility.CombinePaths(Paths.ConfigPath + "\\" + MyPluginInfo.PLUGIN_GUID[9..21].Replace(".", "\\")) + MyPluginInfo.PLUGIN_GUID[..8];
+    private static string[] modGUIDSegments = MyPluginInfo.PLUGIN_GUID.Split(".");
+    private static readonly string configLocation = Utility.CombinePaths(Paths.ConfigPath + "\\" + modGUIDSegments[1] + "\\" + modGUIDSegments[2]);
     internal static ConfigFile killbindConfig = new(configLocation + ".cfg", false);
     internal static List<IDetour> Hooks { get; set; } = new List<IDetour>();
     public static readonly KillBind_Inputs InputActionInstance = new();
